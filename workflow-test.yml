@@ -1,4 +1,14 @@
 #workflow-test.yml
-specify the Planemo tests
-
-Planemo test definitions for the workflow
+- doc: Test Hello World MPI workflow
+  job:
+    hello-world-mpi:
+      nodes: 2
+      tasks: 4
+  outputs:
+    mpi-hello-world.out:
+      contains:
+        - "Hello world from processor"
+        - "rank 0 out of 4 processors"
+        - "rank 1 out of 4 processors"
+        - "rank 2 out of 4 processors"
+        - "rank 3 out of 4 processors"
