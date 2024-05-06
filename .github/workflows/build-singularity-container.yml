@@ -1,0 +1,1 @@
+sudo singularity build hello-world-mpi.sif hello-world-mpi-container.def
