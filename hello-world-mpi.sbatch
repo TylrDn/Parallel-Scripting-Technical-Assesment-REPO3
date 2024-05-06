@@ -1,3 +1,5 @@
+#hello-world-mpi.sbatch
+
 #!/bin/bash
 #SBATCH --job-name=hello-world-mpi
 #SBATCH --output=hello-world-mpi_%j.out
