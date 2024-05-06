@@ -15,7 +15,7 @@
 module load singularity
 
 # Define container image and mpirun command
-container="./hello-world-mpi.sif"
+CONTAINER="/contrib/hello-world-mpi.sif"
 mpirun_cmd="singularity run --mpi $container"
 
 # Print job information
