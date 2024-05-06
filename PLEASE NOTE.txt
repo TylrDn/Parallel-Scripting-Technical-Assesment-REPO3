@@ -1,0 +1,63 @@
+Bash Path: 
+cd ~
+cd Music/Parallel\ Works/Parallel-Scripting-Technical-Assesment--Repo-1-
+
+
+Please note that you need to replace /path/to/desktop-$desktop_type.sif, /path/to/hello-world-mpi.sif, and other placeholders with the actual paths to your Singularity container images and files.
+Coordinate the completetion of any/all placeholders while providing exact output for the previously specified files The main bash script that sets up the interactive desktop and runs the MPI tasks
+
+REVISE all associated repository code and files containing source code to completion. Additionally comment notes, fill in all placeholders, coordinate necessary file association, Specify file name the source code belongs to, clean up anything out of place formatting wise, consider any additional files within the repository but prioritize completing one full file at a time. Explain any other files edits or changes for further follow up about what needs to still be incorporated in order to finish creating the workflow in parallelworks.
+   provide completed source code for these files one at a time (follow up questions to include previous source code) starting with
+
+interactive-desktop-workflow.xml (Done)
+interactive-desktop-workflow.sh (Done)
+
+hello-world-mpi-container.def (To Do)
+------------------------------------
+Existing Source Code:
+## The main bash script that sets up the interactive desktop and runs the MPI tasks
+#!/bin/bash
+
+# Set up the interactive desktop environment
+DESKTOP_IMAGE="/path/to/desktop-${desktop_type,,}.sif"
+srun --nodes=$num_nodes --partition=$partition --time=$time_limit:00 --pty singularity exec --writable-tmpfs $DESKTOP_IMAGE /usr/bin/startvnc.sh
+
+# Run the MPI hello world job
+MPI_IMAGE="/path/to/hello-world-mpi.sif"
+srun --nodes=$num_nodes --partition=$partition --time=$time_limit:00 singularity exec $MPI_IMAGE /opt/mpi/bin/mpirun /opt/hello-world/hello
+-----------------------------
+hello-world-mpi.sbatch (To Do)
+Existing Source Code:#		
+Slurm batch script for running the MPI hello world job
+
+
+#!/bin/bash
+#SBATCH --job-name=hello-world-mpi
+#SBATCH --output=hello-world-mpi_%j.out
+#SBATCH --error=hello-world-mpi_%j.err
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=1
+#SBATCH --partition=compute
+#SBATCH --time=00:10:00
+#SBATCH --constraint=skylake
+
+# Load necessary modules
+module load singularity
+
+# Define container image and mpirun command
+container="/path/to/hello-world.sif"
+mpirun_cmd="singularity run --mpi $container"
+
+# Print job information
+echo "Running Hello World MPI job on Slurm"
+echo "Job ID: $SLURM_JOB_ID"
+echo "Node list: $SLURM_JOB_NODELIST"
+echo "Number of nodes: $SLURM_JOB_NUM_NODES"
+echo "Tasks per node: $SLURM_NTASKS_PER_NODE"
+echo "CPUs per task: $SLURM_CPUS_PER_TASK"
+
+# Run the MPI Hello World program
+$mpirun_cmd
+
+supporting files like Singularity definition files, Slurm job scripts, README

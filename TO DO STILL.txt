@@ -1,0 +1,79 @@
+Please note that you need to replace /path/to/desktop-${desktop_type,,}.sif and /path/to/hello-world-mpi.sif with the actual paths to your Singularity container images on the Parallel Works cluster.
+
+This script is designed to be executed by the Parallel Works workflow engine, which will substitute the $num_nodes, $partition, and $time_limit variables with the values provided by the user through the workflow interface defined in interactive-desktop-workflow.xml
+
+
+
+Here is the completed source code for the `hello-world-mpi-container.def` file:
+
+```
+Bootstrap: docker
+From: ubuntu:20.04
+
+%post
+    # Install required packages
+    apt-get update
+    apt-get install -y wget build-essential libopenmpi-dev
+
+    # Download and install Miniconda
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda
+    rm Miniconda3-latest-Linux-x86_64.sh
+
+    # Set up Conda environment
+    /opt/conda/bin/conda init
+    /opt/conda/bin/conda create -y -n mpi_env
+    /opt/conda/bin/conda activate mpi_env
+    /opt/conda/bin/conda install -y -c conda-forge openmpi
+
+    # Compile Hello World MPI program
+    mkdir /opt/hello-world
+    echo '#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    int world_size, world_rank, name_len;
+    char hostname[MPI_MAX_PROCESSOR_NAME];
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    MPI_Get_processor_name(hostname, &name_len);
+
+    printf("Hello world from processor %s, rank %d out of %d processors\n", hostname, world_rank, world_size);
+
+    MPI_Finalize();
+    return 0;
+}' > /opt/hello-world/hello.c
+
+    mpicc /opt/hello-world/hello.c -o /opt/hello-world/hello
+
+%environment
+    export PATH=/opt/conda/bin:$PATH
+    source /opt/conda/etc/profile.d/conda.sh
+    conda activate mpi_env
+
+%runscript
+    /opt/conda/bin/mpirun /opt/hello-world/hello
+```
+
+Notes:
+- This Singularity definition file starts from an Ubuntu 20.04 base image.
+- It installs the required packages (wget, build-essential, libopenmpi-dev) for building and running the MPI hello world program.
+- It downloads and installs Miniconda, creates a Conda environment named `mpi_env`, and installs OpenMPI in that environment.
+- It creates a directory `/opt/hello-world` and compiles a simple "Hello World" MPI program in C.
+- The `%environment` section sets up the environment to activate the `mpi_env` Conda environment by default.
+- The `%runscript` section defines the default run behavior to execute the compiled `hello` program with `mpirun`.
+
+This Singularity definition file can be used to build the container image for the MPI hello world job. The resulting container image will be named `hello-world-mpi.sif` (or any other name you choose) and can be used with the `interactive-desktop-workflow.sh` script and the `hello-world-mpi.sbatch` script.
+
+To build the container image, you can use the following command:
+
+```
+sudo singularity build hello-world-mpi.sif hello-world-mpi-container.def
+```
+
+This will create the `hello-world-mpi.sif` container image based on the instructions in the `hello-world-mpi-container.def` file.
+
+After building the container image, you need to update the paths in the `interactive-desktop-workflow.sh` and `hello-world-mpi.sbatch` scripts to point to the correct location of the `hello-world-mpi.sif` image.
+

@@ -1,0 +1,34 @@
+#       Parallel Scripting Technical Assesment (Repo 1)
+#       For use launching Interactive workflows on the Parallel Works Platform
+#       Defines the workflow interface and execution steps
+
+<?xml version="1.0"?>
+<workflow name="Interactive Desktop" version="1.0" xmlns="http://www.paralleworks.com/workflow">
+  <description>Launch an interactive Linux desktop environment using noVNC</description>
+  
+  <parameters>
+    <!-- Parameter to select the desktop environment type (GNOME or KDE) -->
+    <parameter name="desktop_type" label="Desktop Type" type="select" options="GNOME,KDE" default="GNOME" />
+    
+    <!-- Parameter to specify the number of nodes for the interactive session -->
+    <parameter name="num_nodes" label="Number of Nodes" type="number" min="1" default="1" />
+    
+    <!-- Parameter to specify the Slurm partition for the job (optional) -->
+    <parameter name="partition" label="Slurm Partition" type="text" default="" />
+    
+    <!-- Parameter to set the time limit for the interactive session in minutes -->
+    <parameter name="time_limit" label="Time Limit (minutes)" type="number" min="1" default="60" />
+  </parameters>
+
+  <!-- Specifies the main script file to be executed for the workflow -->
+  <script>interactive-desktop-workflow.sh</script>
+
+  <!-- Defines additional asset files required by the workflow -->
+  <assets>
+    <!-- Singularity definition file for building the MPI container -->
+    <asset name="hello-world-mpi-container.def" path="hello-world-mpi-container.def" />
+    
+    <!-- Slurm batch script for running the MPI hello world job -->
+    <asset name="hello-world-mpi.sbatch" path="hello-world-mpi.sbatch" />
+  </assets>
+</workflow>

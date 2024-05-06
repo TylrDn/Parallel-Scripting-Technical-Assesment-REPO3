@@ -1,0 +1,35 @@
+name: Build Singularity Container
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Install Singularity
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libseccomp-dev pkg-config squashfs-tools cryptsetup
+        export VERSION=3.9.8
+        wget https://github.com/apptainer/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz
+        tar -xzf singularity-${VERSION}.tar.gz
+        cd singularity-${VERSION}
+        ./mconfig
+        make -C builddir
+        sudo make -C builddir install
+
+    - name: Build Singularity Container
+      run: |
+        singularity build hello-world-mpi.sif hello-world-mpi-container.def
+        
+    - name: Upload Singularity Container
+      uses: actions/upload-artifact@v3
+      with:
+        name: singularity-container
+        path: hello-world-mpi.sif

@@ -1,0 +1,11 @@
+{
+  "resource": {
+    "type": "computeResource", 
+    "id": "661943eb0366976717de9339"
+  },
+  "jobschedulertype": "CONTROLLER",
+  "input_method": "TEXT",
+  "script_text": "#!/bin/bash\n\n# Install noVNC and websockify\nsudo apt-get update\nsudo apt-get install -y novnc websockify\n\n# Configure and start VNC server\nx11vnc -create -xkb -noxrecord -noxfixes -noxdamage -display :0 -auth /var/run/lightdm/root/:0 -forever &\n\n# Start websockify to proxy VNC traffic to websocket \n/usr/share/novnc/utils/launch.sh --vnc localhost:5900 --listen 6080\n\necho \"Starting noVNC setup at $(date)\"\necho \"VNC server started successfully\"\necho \"Websockify proxy launched on port 6080\"",
+  "startCmd": "008_script_submitter/main.sh",
+  "cancelCmd": "cancel.sh"
+}
