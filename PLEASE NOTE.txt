@@ -1,3 +1,4 @@
+#PLEASE NOTE.txt
 Bash Path: 
 cd ~
 cd Music/Parallel\ Works/Parallel-Scripting-Technical-Assesment--Repo-1-
